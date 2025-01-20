@@ -99,8 +99,6 @@ int numeros[LINHAS][COLUNAS]= { // 1, 2, 3, 4, 5,6, 7, 8, 9.
 
 void setup()
 {
-  Serial.begin(9600);
-  
   //DEFININDO OS PINOS DE ACIONAMENTO COMO SAÍDAS DIGITAIS
   for(int i=0;i<TAMANHO_PINOS_CHAVEAMENTO;i++)
   {
@@ -153,14 +151,12 @@ void loop()
            cont_botaoI++;
            estadoAtual++;
 	}
-    	Serial.println(cont_botaoI); //UTILIZADA APENAS PARA TESTES
     	incrementaContadores(contador1,contador2);
         imprimeNumerodeSegundos();
     	break;
     
     case ESTADO_PAUSADO:
-    
-    	Serial.println(cont_botaoI); //UTILIZADA APENAS PARA TESTES
+	    
     	pausado();
     	break;
     

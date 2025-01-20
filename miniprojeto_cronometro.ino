@@ -148,11 +148,11 @@ void loop()
     	
     	estadoBotaoInicio=digitalRead(BOTAO_INICIO);
     	if(estadoBotaoInicio==HIGH)
-      {
-        delay(100);
-        cont_botaoI++;
-        estadoAtual++;
-      }
+	{
+	   delay(100);
+           cont_botaoI++;
+           estadoAtual++;
+	}
     	Serial.println(cont_botaoI); //UTILIZADA APENAS PARA TESTES
     	incrementaContadores(contador1,contador2);
         imprimeNumerodeSegundos();

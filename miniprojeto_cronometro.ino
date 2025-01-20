@@ -26,8 +26,8 @@ Contato: www.linkedin.com/in/julio-rodrigues-000a8b298
 //MAPEAMENTO DOS PINOS QUE ATUARÃO COMO CHAVES PARA ACIONAR O DEVIDO DISPLAY
 
 int PINO_CHAVE_DISPLAY1=9; 	//PINO PARA ACIONAR O PRIMEIRO DISPLAY
-int PINO_CHAVE_DISPLAY2=10; //PINO PARA ACIONAR O SEGUNDO  DISPLAY
-int PINO_CHAVE_DISPLAY3=11; //PINO PARA ACIONAR O TERCEIRO DISPLAY
+int PINO_CHAVE_DISPLAY2=10;     //PINO PARA ACIONAR O SEGUNDO  DISPLAY
+int PINO_CHAVE_DISPLAY3=11;     //PINO PARA ACIONAR O TERCEIRO DISPLAY
 
 #define TAMANHO_PINOS_CHAVEAMENTO	3
 int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]= 
@@ -35,19 +35,19 @@ int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]=
 
 // DEFINIÇÃO DOS ESTADOS DO CRONÔMETRO 
 
-#define ESTADO_INICIAL 					      0
-#define ESTADO_AGUARDAR_BOTAO_INICIO 	1
-#define ESTADO_CONTAGEM 				      2
-#define ESTADO_PAUSADO 					      3 
+#define ESTADO_INICIAL 		            0
+#define ESTADO_AGUARDAR_BOTAO_INICIO 	    1
+#define ESTADO_CONTAGEM		            2
+#define ESTADO_PAUSADO 		            3 
 
 // MAPEAMENTO DAS FUNÇÕES UTILIZADAS
 
-void desligar(); 								                 //FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
-void iniciar();  								                 //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
-void incrementaContadores(int cont1, int cont2); //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
-void imprimeNumerodeSegundos();					         //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
-void pausado(); 								                 //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
-void resetar(int botao_reset);					         //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
+void desligar(); 					      //FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
+void iniciar();  					      //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
+void incrementaContadores(int cont1, int cont2); 	      //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
+void imprimeNumerodeSegundos();				      //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
+void pausado();    		                              //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
+void resetar(int botao_reset);				      //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
 
 // DEFINIÇÕES DE VARIÁVEIS UTILIZADAS
 
@@ -63,21 +63,21 @@ int uni,dezen,cent; //uni:unidade; dezen:dezena; cent:centena;
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE INÍCIO/PAUSA
 
-const int BOTAO_INICIO=12; 	//BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
-int estadoBotaoInicio;		  //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
-int cont_botaoI=0;			    //CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
+const int BOTAO_INICIO=12; 	    //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+int estadoBotaoInicio;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
+int cont_botaoI=0;		    //CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE RESET
 
-const int BOTAO_RESET=13; 	//BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+const int BOTAO_RESET=13; 	    //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
 int estadoBotaoReset;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
 
-int contador1=0; 		//CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
-int cont1_aux=0;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
-int contador2=0; 		//CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
-int cont2_aux=0;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
+int contador1=0; 		    //CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
+int cont1_aux=0;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
+int contador2=0; 		    //CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
+int cont2_aux=0;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
 
-unsigned long tempcnt1=1000; //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
+unsigned long tempcnt1=1000;        //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
 
 // MATRIZ PARA ARMAZENAR SEQUÊNCIA BINÁRIA NÚMERICA DE CADA NÚMERICO DECIMAL
 #define LINHAS		10
@@ -137,10 +137,10 @@ void loop()
     
     	estadoBotaoInicio=digitalRead(BOTAO_INICIO);
     	if(estadoBotaoInicio==HIGH)
-      {
-        desligar();
-        estadoAtual++;
-      }
+	{
+	   desligar();
+           estadoAtual++;
+	}
     	break;
     
     // TERCEIRO ESTADO DO CRONÔMETRO: INÍCIO DA CONTAGEM DO CRONÔMETRO
@@ -155,7 +155,7 @@ void loop()
       }
     	Serial.println(cont_botaoI); //UTILIZADA APENAS PARA TESTES
     	incrementaContadores(contador1,contador2);
-      imprimeNumerodeSegundos();
+        imprimeNumerodeSegundos();
     	break;
     
     case ESTADO_PAUSADO:
@@ -225,9 +225,9 @@ void imprimeNumerodeSegundos()
   {
     cent=contador2%10; //ATRIBUI VALOR À VARIÁVEL CENT QUE REPRESENTA A CENTENA DO DISPLAY
     for(int c=0;c<COLUNAS;c++)
-	  {
-      digitalWrite(pinos_display[c], numeros[cent][c]);
-	  }
+    {	
+	digitalWrite(pinos_display[c], numeros[cent][c]);
+    }
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MAIS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY3,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -235,7 +235,7 @@ void imprimeNumerodeSegundos()
           
     dezen=contador1/10; //ATRIBUI VALOR À VARIÁVEL DEZ QUE REPRESENTA A DEZENA DO DISPLAY
     for(int c=0;c<COLUNAS;c++)
-	  {
+    {
       digitalWrite(pinos_display[c], numeros[dezen][c]);
     }
     // BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DISPLAY DO DÍGITO DAS DEZENAS
@@ -245,9 +245,9 @@ void imprimeNumerodeSegundos()
 
     uni=contador1%10; //ATRIBUI VALOR À VARIÁVEL UNI QUE REPRESENTA A UNIDADE DO DISPLAY
     for(int c=0;c<COLUNAS;c++)
-	  {
+    {
       digitalWrite(pinos_display[c], numeros[uni][c]);
-	  }
+    }
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MENOS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY1,HIGH);
     delay(tempMULTIPLEXACAO);

@@ -4,9 +4,9 @@ Engenharia de Controle e Automação- IFPB
 Cronômetro com 3 displays de 7 segmentos
 
 Programa desenvolvido com intuito de desenvolver um cronômetro capaz
-de contar até 999 utilizando 3 displays 7 segmentos, botões, resistores e 
-transistores atuando como chaves para realizar a multiplexação dos 3 
-displays.
+de contar até 999, ser pausado e retornar para a contagem ou reiniciar a contagem,
+utilizando 3 displays 7 segmentos, 2 botões(um para iniciar e pausar e o outro para reiniciar),
+resistores e transistores atuando como chaves para realizar a multiplexação dos 3 displays.
 
 Autor: Julio Cesar Pereira Rodrigues  Data: Janeiro de 2025
 

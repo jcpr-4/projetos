@@ -10,7 +10,9 @@ displays.
 
 Autor: Julio Cesar Pereira Rodrigues  Data: Janeiro de 2025
 
-Contato: www.linkedin.com/in/julio-rodrigues-000a8b298
+Contatos: www.linkedin.com/in/julio-rodrigues-000a8b298
+	  http://lattes.cnpq.br/6285832622159221
+
 */
 
 /* ##### MAPEAMENTO DOS PINOS DO DISPLAY ##### */
@@ -35,19 +37,21 @@ int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]=
 
 // DEFINIÇÃO DOS ESTADOS DO CRONÔMETRO 
 
-#define ESTADO_INICIAL 		            0
-#define ESTADO_AGUARDAR_BOTAO_INICIO 	    1
-#define ESTADO_CONTAGEM		            2
-#define ESTADO_PAUSADO 		            3 
+#define ESTADO_INICIAL 					0
+#define ESTADO_AGUARDAR_BOTAO_INICIO 	                1
+#define ESTADO_CONTAGEM 				2
+#define ESTADO_PAUSADO 					3 
 
 // MAPEAMENTO DAS FUNÇÕES UTILIZADAS
 
-void desligar(); 					      //FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
-void iniciar();  					      //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
-void incrementaContadores(int cont1, int cont2); 	      //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
-void imprimeNumerodeSegundos();				      //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
-void pausado();    		                              //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
-void resetar(int botao_reset);				      //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
+void desligar(); 						//FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
+void iniciar();  			    		        //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
+void incrementaContadores(int cont1, int cont2);                //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
+void imprimeNumerodeSegundos();				        //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
+void pausado(); 			 		        //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
+void resetar(int botao_reset);				        //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
+
+void leituraBotaoInicio(const int botao); 	                //FUNÇÃO UTILIZADA PARA REALIZAR A LEITURA DO BOTÃO INÍCIO/PAUSA
 
 // DEFINIÇÕES DE VARIÁVEIS UTILIZADAS
 
@@ -58,26 +62,29 @@ int pinos_display[TAMANHO_VETOR_PINOS] = {PINO_A, PINO_B, PINO_C, PINO_D,
                                          PINO_E, PINO_F, PINO_G};
 
 // variáveis utilizadas para fazer a multiplexação dos displays
-int uni,dezen,cent; //uni:unidade; dezen:dezena; cent:centena;
+int uni,dezen,cent;
 #define tempMULTIPLEXACAO 5 //TEMPO UTILIZADO PARA FAZER A MULTIPLEXAÇÃO DOS DISPLAYS
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE INÍCIO/PAUSA
 
-const int BOTAO_INICIO=12; 	    //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
-int estadoBotaoInicio;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
-int cont_botaoI=0;		    //CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
+const int BOTAO_INICIO=12; 	         //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+int estadoBotaoInicio;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
+int cont_botaoI=0;			 //CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
+int ultimoEstadoBotao=LOW;               //VARIÁVEL UTILIZADA PARA ARMAZENAR
+unsigned long ultimoTempDebounce=0;      //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO TEMPO DE DEBOUNCE
+unsigned long delayDebounce=30;          //VARIÁVEL UTILIZADA PARA DEFINIR UM TEMPO MÍNIMO DE DELAY PARA O ACABAR O EFEITO DEBOUNCE
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE RESET
 
-const int BOTAO_RESET=13; 	    //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
-int estadoBotaoReset;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
+const int BOTAO_RESET=13; 	         //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+int estadoBotaoReset;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
 
-int contador1=0; 		    //CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
-int cont1_aux=0;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
-int contador2=0; 		    //CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
-int cont2_aux=0;		    //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
+int contador1=0; 		         //CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
+int cont1_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
+int contador2=0; 		         //CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
+int cont2_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
 
-unsigned long tempcnt1=1000;        //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
+unsigned long tempcnt1=1000;             //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
 
 // MATRIZ PARA ARMAZENAR SEQUÊNCIA BINÁRIA NÚMERICA DE CADA NÚMERICO DECIMAL
 #define LINHAS		10
@@ -99,6 +106,8 @@ int numeros[LINHAS][COLUNAS]= { // 1, 2, 3, 4, 5,6, 7, 8, 9.
 
 void setup()
 {
+  Serial.begin(9600);
+  
   //DEFININDO OS PINOS DE ACIONAMENTO COMO SAÍDAS DIGITAIS
   for(int i=0;i<TAMANHO_PINOS_CHAVEAMENTO;i++)
   {
@@ -135,34 +144,28 @@ void loop()
     
     	estadoBotaoInicio=digitalRead(BOTAO_INICIO);
     	if(estadoBotaoInicio==HIGH)
-	{
-	   desligar();
-           estadoAtual++;
-	}
+        {
+          desligar();
+          estadoAtual++;
+        }
     	break;
     
     // TERCEIRO ESTADO DO CRONÔMETRO: INÍCIO DA CONTAGEM DO CRONÔMETRO
     case ESTADO_CONTAGEM:
     	
-    	estadoBotaoInicio=digitalRead(BOTAO_INICIO);
-    	if(estadoBotaoInicio==HIGH)
-	{
-	   delay(100);
-           cont_botaoI++;
-           estadoAtual++;
-	}
+    	leituraBotaoInicio(BOTAO_INICIO);
     	incrementaContadores(contador1,contador2);
         imprimeNumerodeSegundos();
     	break;
     
     case ESTADO_PAUSADO:
-	    
+    
     	pausado();
     	break;
     
-	} //final do laço de repetição switch
+	}// final do laço de repetição switch
   	
-} //fim do loop
+}// fim do loop
 
 //INÍCIO DA IMPLEMENTAÇÃO DAS FUNÇÕES UTILIZADAS NO CÓDIGO
 
@@ -188,7 +191,6 @@ void desligar()
   {
     digitalWrite(pinos_chaveamento[i], LOW);
   }
-  delay(500);
 }
 
 void incrementaContadores(int cont1, int cont2)
@@ -221,8 +223,8 @@ void imprimeNumerodeSegundos()
   {
     cent=contador2%10; //ATRIBUI VALOR À VARIÁVEL CENT QUE REPRESENTA A CENTENA DO DISPLAY
     for(int c=0;c<COLUNAS;c++)
-    {	
-	digitalWrite(pinos_display[c], numeros[cent][c]);
+    {
+      digitalWrite(pinos_display[c], numeros[cent][c]);
     }
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MAIS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY3,HIGH);
@@ -298,25 +300,53 @@ void pausado()
   digitalWrite(PINO_CHAVE_DISPLAY1,LOW);
   
   //BLOCO DE CÓDIGO UTILIZADO PARA DEFINIR SE A CONTAGEM SERÁ REINICIADA OU RETOMADA
-  estadoBotaoInicio=digitalRead(BOTAO_INICIO);
-  if(estadoBotaoInicio==HIGH)
+   leituraBotaoInicio(BOTAO_INICIO);
+   //SE 'BOTAO_RESET' ACIONADO A CONTAGEM É REINICIADA
+   estadoBotaoReset=digitalRead(BOTAO_RESET);
+   if(estadoBotaoReset==HIGH)
+   {
+     contador1=0;
+     contador2=0;
+     cont_botaoI=0;
+     estadoAtual=ESTADO_CONTAGEM;
+   }
+} //FIM DA FUNÇÃO PAUSADO
+
+//IMPLEMENTAÇÃO DA FUNÇÃO UTILIZADA PARA LER O ESTADO DO BOTÃO DE INÍCIO E PAUSA DO CRONÔMETRO
+void leituraBotaoInicio(const int botao)
+{
+  //REALIZA A LEITURA DO ESTADO DO BOTÃO E ARMAZENA EM VARIÁVEL LOCAL
+  int leitura=digitalRead(botao);
+  
+  //COMPARA O ULTIMO ESTADO ARMAZENADO DO BOTÃO COM A LEITURA DO BOTÃO
+  if(leitura!=ultimoEstadoBotao)
   {
-    //SE 'BOTAO_INICIO' ACIONADO RETOMA A CONTAGEM  
-    delay(100);
-    cont_botaoI++;
-    if(cont_botaoI==2)
+    ultimoTempDebounce=millis();
+  }
+  
+  //VERIFICA A LEITURA DO BOTÃO E COMPARA COM O TEMPO MÍNIMO DE DELAY PARA EVITAR O DEBOUNCE
+  if((millis()-ultimoTempDebounce)>delayDebounce)
+  {
+    if(leitura!=estadoBotaoInicio)
     {
-      cont_botaoI=0;
-      estadoAtual=ESTADO_CONTAGEM;
+      estadoBotaoInicio=leitura;
+      if(estadoBotaoInicio==HIGH)
+      {
+        cont_botaoI++;
+        
+        //SE O CONTADOR DO BOTÃO DE INÍCIO/PAUSA FOI MENOR OU IGUAL A UM, ATUALIZA O ESTADO DO CRONÔMETRO
+        if(cont_botaoI<=1)
+        {
+          estadoAtual++;
+        }else if(cont_botaoI==2)
+        {
+          //SE O CONTADOR DO BOTÃO DE INÍCIO/PAUSA FOR IGUAL A 2
+          //O CRONÔMETRO RETORNA PRO ESTADO DE CONTAGEM E ZERA O CONTADOR DO BOTÃO
+          cont_botaoI=0;
+          estadoAtual=ESTADO_CONTAGEM;
+        }
+      }
     }
   }
-  //SE 'BOTAO_RESET' ACIONADO A CONTAGEM É REINICIADA
-  estadoBotaoReset=digitalRead(BOTAO_RESET);
-  if(estadoBotaoReset==HIGH)
-  {
-    contador1=0;
-    contador2=0;
-    cont_botaoI=0;
-    estadoAtual=ESTADO_CONTAGEM;
-  }
+  ultimoEstadoBotao=leitura;
 }

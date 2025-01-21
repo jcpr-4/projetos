@@ -74,6 +74,8 @@ int ultimoEstadoBotao=LOW;               //VARIÁVEL UTILIZADA PARA ARMAZENAR
 unsigned long ultimoTempDebounce=0;      //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO TEMPO DE DEBOUNCE
 unsigned long delayDebounce=30;          //VARIÁVEL UTILIZADA PARA DEFINIR UM TEMPO MÍNIMO DE DELAY PARA O ACABAR O EFEITO DEBOUNCE
 
+#define TEMPO_DE_UM_SEGUNDO    1000      //TEMPO DE 1 SEGUNDO EM MILLISEGUNDOS
+
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE RESET
 
 const int BOTAO_RESET=13; 	         //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
@@ -207,7 +209,7 @@ void incrementaContadores(int cont1, int cont2)
   if(cont1>99)
   {
     contador1=0;
-  }else if((millis()-tempcnt1)>1000)
+  }else if((millis()-tempcnt1)>TEMPO_DE_UM_SEGUNDO)
   {
     contador1++;
     cont1_aux=contador1;
@@ -219,7 +221,7 @@ void imprimeNumerodeSegundos()
 {
   //BLOCO DE CÓDIGO QUE REALIZA A MULTIPLEXAÇÃO DOS DISPLAYS
   //E ATUALIZA O NÚMERO DE SEGUNDOS DOS DISPLAYS
-  if((millis()-tempcnt1)<1000)
+  if((millis()-tempcnt1)<TEMPO_DE_UM_SEGUNDO)
   {
     cent=contador2%10; //ATRIBUI VALOR À VARIÁVEL CENT QUE REPRESENTA A CENTENA DO DISPLAY
     for(int c=0;c<COLUNAS;c++)

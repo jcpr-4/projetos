@@ -50,7 +50,6 @@ void incrementaContadores(int cont1, int cont2);                //FUNÇÃO UTILI
 void imprimeNumerodeSegundos();				        //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
 void pausado(); 			 		        //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
 void resetar(int botao_reset);				        //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
-
 void leituraBotaoInicio(const int botao); 	                //FUNÇÃO UTILIZADA PARA REALIZAR A LEITURA DO BOTÃO INÍCIO/PAUSA
 
 // DEFINIÇÕES DE VARIÁVEIS UTILIZADAS

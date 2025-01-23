@@ -61,7 +61,9 @@ int pinos_display[TAMANHO_VETOR_PINOS] = {PINO_A, PINO_B, PINO_C, PINO_D,
                                          PINO_E, PINO_F, PINO_G};
 
 // variáveis utilizadas para fazer a multiplexação dos displays
-int uni,dezen,cent;
+int uni,dezen,cent; //uni:   variável para armazenar o valor da unidade.
+		    //dezen: variável para armazenar o valor da dezena.
+	            //cent:  variável para armazenar o valor da centena.
 #define tempMULTIPLEXACAO 5 //TEMPO UTILIZADO PARA FAZER A MULTIPLEXAÇÃO DOS DISPLAYS
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE INÍCIO/PAUSA
@@ -85,7 +87,7 @@ int cont1_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMER
 int contador2=0; 		         //CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
 int cont2_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
 
-unsigned long tempcnt1=1000;             //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
+unsigned long tempsegundos=1000;             //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
 
 // MATRIZ PARA ARMAZENAR SEQUÊNCIA BINÁRIA NÚMERICA DE CADA NÚMERICO DECIMAL
 #define LINHAS		10
@@ -208,11 +210,11 @@ void incrementaContadores(int cont1, int cont2)
   if(cont1>99)
   {
     contador1=0;
-  }else if((millis()-tempcnt1)>TEMPO_DE_UM_SEGUNDO)
+  }else if((millis()-tempsegundos)>TEMPO_DE_UM_SEGUNDO)
   {
     contador1++;
     cont1_aux=contador1;
-    tempcnt1=millis();
+    tempsegundos=millis();
   }
 }
 
@@ -220,7 +222,7 @@ void imprimeNumerodeSegundos()
 {
   //BLOCO DE CÓDIGO QUE REALIZA A MULTIPLEXAÇÃO DOS DISPLAYS
   //E ATUALIZA O NÚMERO DE SEGUNDOS DOS DISPLAYS
-  if((millis()-tempcnt1)<TEMPO_DE_UM_SEGUNDO)
+  if((millis()-tempsegundos)<TEMPO_DE_UM_SEGUNDO)
   {
     cent=contador2%10; //ATRIBUI VALOR À VARIÁVEL CENT QUE REPRESENTA A CENTENA DO DISPLAY
     for(int c=0;c<COLUNAS;c++)

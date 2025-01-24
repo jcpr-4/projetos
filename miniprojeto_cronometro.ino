@@ -45,7 +45,7 @@ int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]=
 // MAPEAMENTO DAS FUNÇÕES UTILIZADAS
 
 void desligar(); 						//FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
-void iniciar();  			    		        //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
+void iniciar_displayZERADO();  			    		//FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO ZERADO
 void incrementaContadores(int cont1, int cont2);                //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
 void imprimeNumerodeSegundos();				        //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
 void pausado(); 			 		        //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
@@ -137,7 +137,7 @@ void loop()
     // PRIMEIRO ESTADO DO CRONÔMETRO: ESTADO INICIAL 
     case ESTADO_INICIAL:
     
-    	iniciar();
+    	iniciar_displayZERADO();
     	estadoAtual++;
     
     	break;
@@ -162,7 +162,7 @@ void loop()
     	break;
     
     case ESTADO_PAUSADO:
-    
+	    
     	pausado();
     	break;
     
@@ -172,7 +172,7 @@ void loop()
 
 //INÍCIO DA IMPLEMENTAÇÃO DAS FUNÇÕES UTILIZADAS NO CÓDIGO
 
-void iniciar()
+void iniciar_displayZERADO()
 { 
   // LAÇO DE REPETIÇÃO QUE ATIVA TODOS OS PINOS DE CHAVEAMENTO 
   for(int i=0;i<TAMANHO_PINOS_CHAVEAMENTO;i++)
@@ -181,10 +181,11 @@ void iniciar()
   }
   
   //LAÇO DE REPETIÇÃO PARA ACIONAR OS 3 DISPLAYS COM O VALOR IGUAL A 0
-  for(int i = 0; i < (TAMANHO_VETOR_PINOS-1); i++)
+  for(int i = 0; i < TAMANHO_VETOR_PINOS; i++)
   {
     digitalWrite(pinos_display[i], HIGH);
   }
+  digitalWrite(PINO_G,LOW);
 }
 
 void desligar()
@@ -229,6 +230,7 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[cent][c]);
     }
+	  
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MAIS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY3,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -239,6 +241,7 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[dezen][c]);
     }
+	  
     // BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DISPLAY DO DÍGITO DAS DEZENAS
     digitalWrite(PINO_CHAVE_DISPLAY2,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -249,6 +252,7 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[uni][c]);
     }
+	  
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MENOS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY1,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -311,7 +315,7 @@ void pausado()
      contador1=0;
      contador2=0;
      cont_botaoI=0;
-     estadoAtual=ESTADO_CONTAGEM;
+     estadoAtual=ESTADO_INICIAL;
    }
 } //FIM DA FUNÇÃO PAUSADO
 

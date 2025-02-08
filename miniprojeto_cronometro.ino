@@ -41,6 +41,7 @@ int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]=
 #define ESTADO_AGUARDAR_BOTAO_INICIO 	                1
 #define ESTADO_CONTAGEM 				2
 #define ESTADO_PAUSADO 					3 
+#define ESTADO_FIM_DE_CONTAGEM 				4
 
 // MAPEAMENTO DAS FUNÇÕES UTILIZADAS
 
@@ -165,6 +166,9 @@ void loop()
 	    
     	pausado();
     	break;
+    case ESTADO_FIM_DE_CONTAGEM:
+	estadoAtual=ESTADO_INICIAL;
+	break;
     
 	}// final do laço de repetição switch
   	
@@ -207,7 +211,10 @@ void incrementaContadores(int cont1, int cont2)
     contador2++;
     cont2_aux=contador2;
   }
-  if(cont2>9)contador2=0;
+  if(cont2>9){
+    contador2=0;
+    estadoAtual=ESTADO_FIM_DE_CONTAGEM;
+  }
   if(cont1>99)
   {
     contador1=0;

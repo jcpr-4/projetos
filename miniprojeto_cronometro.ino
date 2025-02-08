@@ -1,4 +1,5 @@
 /*
+
 Engenharia de Controle e Automação- IFPB
 
 Cronômetro com 3 displays de 7 segmentos
@@ -11,7 +12,7 @@ resistores e transistores atuando como chaves para realizar a multiplexação do
 Autor: Julio Cesar Pereira Rodrigues  Data: Janeiro de 2025
 
 Contatos: www.linkedin.com/in/julio-rodrigues-000a8b298
-	  http://lattes.cnpq.br/6285832622159221
+	      http://lattes.cnpq.br/6285832622159221
 
 */
 
@@ -28,8 +29,8 @@ Contatos: www.linkedin.com/in/julio-rodrigues-000a8b298
 //MAPEAMENTO DOS PINOS QUE ATUARÃO COMO CHAVES PARA ACIONAR O DEVIDO DISPLAY
 
 int PINO_CHAVE_DISPLAY1=9; 	//PINO PARA ACIONAR O PRIMEIRO DISPLAY
-int PINO_CHAVE_DISPLAY2=10;     //PINO PARA ACIONAR O SEGUNDO  DISPLAY
-int PINO_CHAVE_DISPLAY3=11;     //PINO PARA ACIONAR O TERCEIRO DISPLAY
+int PINO_CHAVE_DISPLAY2=10; //PINO PARA ACIONAR O SEGUNDO  DISPLAY
+int PINO_CHAVE_DISPLAY3=11; //PINO PARA ACIONAR O TERCEIRO DISPLAY
 
 #define TAMANHO_PINOS_CHAVEAMENTO	3
 int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]= 
@@ -37,21 +38,21 @@ int pinos_chaveamento[TAMANHO_PINOS_CHAVEAMENTO]=
 
 // DEFINIÇÃO DOS ESTADOS DO CRONÔMETRO 
 
-#define ESTADO_INICIAL 					0
-#define ESTADO_AGUARDAR_BOTAO_INICIO 	                1
-#define ESTADO_CONTAGEM 				2
-#define ESTADO_PAUSADO 					3 
-#define ESTADO_FIM_DE_CONTAGEM 				4
+#define ESTADO_INICIAL 					      0
+#define ESTADO_AGUARDAR_BOTAO_INICIO 			      1
+#define ESTADO_CONTAGEM 				      2
+#define ESTADO_PAUSADO 					      3 
+#define ESTADO_FIM_DE_CONTAGEM       			      4
 
 // MAPEAMENTO DAS FUNÇÕES UTILIZADAS
 
-void desligar(); 						//FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
-void iniciar_displayZERADO();  			    		//FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO ZERADO
-void incrementaContadores(int cont1, int cont2);                //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
-void imprimeNumerodeSegundos();				        //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
-void pausado(); 			 		        //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
-void resetar(int botao_reset);				        //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
-void leituraBotaoInicio(const int botao); 	                //FUNÇÃO UTILIZADA PARA REALIZAR A LEITURA DO BOTÃO INÍCIO/PAUSA
+void desligar(); 								 //FUNÇÃO UTILIZADA APENAS PARA DESLIGAR O CRONÔMETRO 
+void iniciar_displayZERADO();  								 //FUNÇÃO UTILIZADA PARA INICIAR O CRONÔMETRO 
+void incrementaContadores(int cont1, int cont2); //FUNÇÃO UTILIZADA PARA INCREMENTAR O VALOR DOS CONTADORES
+void imprimeNumerodeSegundos();					 //FUNÇÃO UTILIZADA PARA IMPRIMIR O NÚMERO DE SEGUNDOS NOS DISPLAYS
+void pausado(); 								 //FUNÇÃO UTILIZADA PARA PAUSAR O CRONÔMETRO
+void resetar(int botao_reset);					 //FUNÇÃO UTILIZADA PARA RESETAR O CRONÔMETRO QUANDO ESTIVER PAUSADO
+void leituraBotaoInicio(const int botao);        //FUNÇÃO UTILIZADA PARA REALIZAR A LEITURA DO BOTÃO INÍCIO/PAUSA
 
 // DEFINIÇÕES DE VARIÁVEIS UTILIZADAS
 
@@ -63,32 +64,33 @@ int pinos_display[TAMANHO_VETOR_PINOS] = {PINO_A, PINO_B, PINO_C, PINO_D,
 
 // variáveis utilizadas para fazer a multiplexação dos displays
 int uni,dezen,cent; //uni:   variável para armazenar o valor da unidade.
-		    //dezen: variável para armazenar o valor da dezena.
-	            //cent:  variável para armazenar o valor da centena.
+					//dezen: variável para armazenar o valor da dezena.
+					//cent:  variável para armazenar o valor da centena.
 #define tempMULTIPLEXACAO 5 //TEMPO UTILIZADO PARA FAZER A MULTIPLEXAÇÃO DOS DISPLAYS
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE INÍCIO/PAUSA
 
-const int BOTAO_INICIO=12; 	         //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
-int estadoBotaoInicio;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
-int cont_botaoI=0;			 //CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
-int ultimoEstadoBotao=LOW;               //VARIÁVEL UTILIZADA PARA ARMAZENAR
-unsigned long ultimoTempDebounce=0;      //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO TEMPO DE DEBOUNCE
-unsigned long delayDebounce=30;          //VARIÁVEL UTILIZADA PARA DEFINIR UM TEMPO MÍNIMO DE DELAY PARA O ACABAR O EFEITO DEBOUNCE
+const int BOTAO_INICIO=12; 	//BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+int estadoBotaoInicio;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
+int cont_botaoI=0;			//CONTADOR UTILIZADO PARA ATUALIZAR O ESTADO DO BOTÃO DE INÍCIO(INICIAR OU PAUSAR)
+int ultimoEstadoBotao=LOW;  //VARIÁVEL UTILIZADA PARA ARMAZENAR
+unsigned long ultimoTempDebounce=0;//VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO TEMPO DE DEBOUNCE
+unsigned long delayDebounce=30;//VARIÁVEL UTILIZADA PARA DEFINIR UM TEMPO MÍNIMO DE DELAY PARA O ACABAR O EFEITO DEBOUNCE
 
-#define TEMPO_DE_UM_SEGUNDO    1000      //TEMPO DE 1 SEGUNDO EM MILLISEGUNDOS
+#define TEMPO_DE_UM_SEGUNDO 1000 //TEMPO DE SEGUNDOS EM MILLISEGUNDOS
+//OBS: está com apenas 250 millisegundos apenas para visualização mais rápida
 
 //VARIÁVEIS UTILIZADAS PARA O BOTÃO DE RESET
 
-const int BOTAO_RESET=13; 	         //BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
-int estadoBotaoReset;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
+const int BOTAO_RESET=13; 	//BOTÃO UTILIZADO PARA INICIAR CONTAGEM DO CRONÔMETRO
+int estadoBotaoReset;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ESTADO DO BOTÃO DE INÍCIO
 
-int contador1=0; 		         //CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
-int cont1_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
-int contador2=0; 		         //CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
-int cont2_aux=0;		         //VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
+int contador1=0; 		//CONTADOR RESPONSÁVEL POR ATUALIZAR OS DOIS PRIMEIROS DÍGITOS
+int cont1_aux=0;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR1
+int contador2=0; 		//CONTADOR RESPONSÁVEL POR ATUALIZAR O TERCEIRO DÍGITO
+int cont2_aux=0;		//VARIÁVEL UTILIZADA PARA ARMAZENAR O ÚLTIMO NÚMERO DO CONTADOR2
 
-unsigned long tempsegundos=0;            //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
+unsigned long tempsegundos=0; //VARIÁVEL DE TEMPO RESPONSÁVEL PELA ATUALIZAÇÃO DOS SEGUNDOS
 
 // MATRIZ PARA ARMAZENAR SEQUÊNCIA BINÁRIA NÚMERICA DE CADA NÚMERICO DECIMAL
 #define LINHAS		10
@@ -140,12 +142,11 @@ void loop()
     
     	iniciar_displayZERADO();
     	estadoAtual++;
-    
     	break;
     
     //SEGUNDO ESTADO DO CRONÔMETRO: AGUARDAR O BOTÃO DE INÍCIO
     case ESTADO_AGUARDAR_BOTAO_INICIO:
-    
+    	
     	estadoBotaoInicio=digitalRead(BOTAO_INICIO);
     	if(estadoBotaoInicio==HIGH)
         {
@@ -158,19 +159,22 @@ void loop()
     case ESTADO_CONTAGEM:
     	
     	leituraBotaoInicio(BOTAO_INICIO);
+    	Serial.println(cont_botaoI);//UTILIZADA APENAS PARA TESTES
     	incrementaContadores(contador1,contador2);
         imprimeNumerodeSegundos();
     	break;
     
     case ESTADO_PAUSADO:
-	    
+    
+    	Serial.println(cont_botaoI);//UTILIZADA APENAS PARA TESTES
     	pausado();
     	break;
+	  
     case ESTADO_FIM_DE_CONTAGEM:
-	estadoAtual=ESTADO_INICIAL;
-	break;
+      estadoAtual=ESTADO_INICIAL;
+      break;
     
-	}// final do laço de repetição switch
+   }// final do laço de repetição switch
   	
 }// fim do loop
 
@@ -185,7 +189,7 @@ void iniciar_displayZERADO()
   }
   
   //LAÇO DE REPETIÇÃO PARA ACIONAR OS 3 DISPLAYS COM O VALOR IGUAL A 0
-  for(int i = 0; i < TAMANHO_VETOR_PINOS; i++)
+  for(int i = 0; i < (TAMANHO_VETOR_PINOS); i++)
   {
     digitalWrite(pinos_display[i], HIGH);
   }
@@ -218,10 +222,12 @@ void incrementaContadores(int cont1, int cont2)
   if(cont1>99)
   {
     contador1=0;
+    
   }else if((millis()-tempsegundos)>TEMPO_DE_UM_SEGUNDO)
   {
     contador1++;
     cont1_aux=contador1;
+    cont2_aux=contador2;
     tempsegundos=millis();
   }
 }
@@ -237,7 +243,6 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[cent][c]);
     }
-	  
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MAIS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY3,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -248,7 +253,6 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[dezen][c]);
     }
-	  
     // BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DISPLAY DO DÍGITO DAS DEZENAS
     digitalWrite(PINO_CHAVE_DISPLAY2,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -259,7 +263,6 @@ void imprimeNumerodeSegundos()
     {
       digitalWrite(pinos_display[c], numeros[uni][c]);
     }
-	  
     //BLOCO DE CÓDIGO PARA FAZER A MULTIPLEXAÇÃO DO DÍGITO MENOS SIGNIFICATIVO DO DISPLAY
     digitalWrite(PINO_CHAVE_DISPLAY1,HIGH);
     delay(tempMULTIPLEXACAO);
@@ -274,7 +277,9 @@ void resetar(int botao_reset)
   if(estadoBotaoReset==HIGH)
   {
     contador1=0;
+    cont1_aux=0;
     contador2=0;
+    cont2_aux=0;
   }
 }
 
